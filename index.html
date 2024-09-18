@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Scheduling System</title>
+    <style>
+        /* Center both buttons */
+        .center {
+            display: flex;
+            justify-content: center;  /* Centers horizontally */
+            margin-top: 20px;  /* Optional, add space above */
+        }
+
+        /* Button styling */
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+        }
+
+        form {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 10px;
+        }
+
+        form label, form input, form select, form button {
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #taskQueue {
+            margin-top: 20px;
+        }
+
+        .task-list {
+            margin-bottom: 20px;
+        }
+
+        .task-list h3 {
+            margin: 0;
+            font-size: 1.2em;
+            text-align: left;
+        }
+
+        .task-list ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .task-list ul li {
+            background: #f9f9f9;
+            padding: 10px;
+            margin-bottom: 5px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Task Scheduling System</h1>
+        
+        <!-- Add Task Form -->
+        <h2>Add Task</h2>
+        <form id="addTaskForm">
+            <label for="taskName">Task Name:</label>
+            <input type="text" id="taskName" required>
+
+            <label for="duration">Duration (minutes):</label>
+            <input type="number" id="duration" required>
+
+            <label for="priority">Priority:</label>
+            <select id="priority" required>
+                <option value="0">High Priority</option>
+                <option value="1">Medium Priority</option>
+                <option value="2">Low Priority</option>
+            </select>
+
+            <div class="center">
+                <button type="submit">Add Task</button>
+            </div>
+        </form>
+
+        <!-- Execute Task -->
+        <h2>Execute Task</h2>
+        <div class="center">
+            <button id="executeTaskBtn">Execute Next Task</button>
+        </div>
+
+        <!-- Display Queue -->
+        <h2>Task Queue</h2>
+        <div id="taskQueue"></div>
+    </div>
+
+    <script>
+        // Priority Queue Data Structure
+        let queue = [[], [], []];  // 3 arrays for High, Medium, Low priorities
+
+        // Function to add a task to the queue
+        function addTask(taskName, duration, priority) {
+            const task = {
+                name: taskName,
+                duration: duration
+            };
+            queue[priority].push(task);
+            displayQueue();
+        }
+
+        // Function to execute the next task
+        function executeTask() {
+            for (let i = 0; i < queue.length; i++) {
+                if (queue[i].length > 0) {
+                    const task = queue[i].shift();
+                    alert(`Executing Task: ${task.name}, Duration: ${task.duration} minutes`);
+                    displayQueue();
+                    return;
+                }
+            }
+            alert("No tasks available to execute.");
+        }
+
+        // Function to display the task queue
+        function displayQueue() {
+            const taskQueue = document.getElementById('taskQueue');
+            taskQueue.innerHTML = '';
+
+            const priorities = ['High Priority', 'Medium Priority', 'Low Priority'];
+
+            for (let i = 0; i < queue.length; i++) {
+                let priorityLevel = queue[i];
+                let taskListHTML = `<div class="task-list"><h3>${priorities[i]}</h3><ul>`;
+                priorityLevel.forEach((task) => {
+                    taskListHTML += `<li>Task: ${task.name}, Duration: ${task.duration} minutes</li>`;
+                });
+                taskListHTML += '</ul></div>';
+                taskQueue.innerHTML += taskListHTML;
+            }
+        }
+
+        // Event Listener for adding a task
+        document.getElementById('addTaskForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const taskName = document.getElementById('taskName').value;
+            const duration = document.getElementById('duration').value;
+            const priority = document.getElementById('priority').value;
+
+            addTask(taskName, duration, parseInt(priority));
+
+            // Reset form
+            this.reset();
+        });
+
+        // Event Listener for executing the next task
+        document.getElementById('executeTaskBtn').addEventListener('click', executeTask);
+    </script>
+</body>
+</html>
